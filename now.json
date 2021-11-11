@@ -1,0 +1,27 @@
+{
+  "build": {
+    "env": {
+      "REACT_APP_NAME": "dev",
+      "REACT_APP_VERSION": "3.4.1",
+      "REACT_APP_DESCRIPTION": "Supercharged version of Create React App with all the bells and whistles.",
+      "REACT_APP_HOMEPAGE": "https://dev.rmuif.com",
+
+      "REACT_APP_TITLE": "RMUIF",
+
+      "REACT_APP_THEME_PRIMARY_COLOR": "blue",
+      "REACT_APP_THEME_SECONDARY_COLOR": "red",
+      "REACT_APP_THEME_DARK": "false",
+
+      "REACT_APP_FIREBASE_API_KEY": "AIzaSyD6dcTssSYPWRtiC2IXwNtTrG5b4EbtRTk",
+      "REACT_APP_FIREBASE_AUTH_DOMAIN": "react-money-management.firebaseapp.com",
+      "REACT_APP_FIREBASE_DATABASE_URL": "https://react-money-management-default-rtdb.firebaseio.com/",
+      "REACT_APP_FIREBASE_PROJECT_ID": "react-money-management",
+      "REACT_APP_FIREBASE_STORAGE_BUCKET": "react-money-management.appspot.com",
+      "REACT_APP_FIREBASE_MESSAGING_SENDER_ID": "221071090441",
+      "REACT_APP_FIREBASE_APP_ID": "1:221071090441:web:e0e6af819bfe97d48ce9d8",
+      "REACT_APP_FIREBASE_MEASUREMENT_ID": "G-XGN79V95XH",
+
+      "REACT_APP_SENTRY_DSN": "https://a5f002be07f74ceeb963ef3f4438843d@o1053261.ingest.sentry.io/6037603"
+    }
+  }
+}
