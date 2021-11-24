@@ -61,6 +61,46 @@ const reducer = (state = INITIAL_STATE, { type, payload }) => {
         error: payload,
         isLoading: false,
       };
+//----------------------------------------------------------------
+    case "ADD_EXPENSE_REQUEST":
+      return {
+        ...state,
+        isLoading: true,
+      };
+
+    case "ADD_EXPENSE_SUCCESS":
+      return {
+        ...state,
+        expense: payload,
+        isLoading: false,
+      };
+
+    case "ADD_EXPENSE_FAILURE":
+      return {
+        ...state,
+        error: payload,
+        isLoading: false,
+      };
+//-------------------------------
+case "UPDATE_EXPENSE_REQUEST":
+  return {
+    ...state,
+    isLoading: true,
+  };
+
+case "UPDATE_EXPENSE_SUCCESS":
+  return {
+    ...state,
+    expense: payload,
+    isLoading: false,
+  };
+
+case "UPDATE_EXPENSE_FAILURE":
+  return {
+    ...state,
+    error: payload,
+    isLoading: false,
+  };
 
     default:
       return state;

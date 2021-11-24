@@ -108,12 +108,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: "text.primary" }}>
                 {!name ? (
-                  <Skeleton
-                    animation="wave"
-                    height={10}
-                    width={40}
-                    style={{ marginBottom: 6 }}
-                  />
+                  email
                 ) : (
                   name
                 )}
