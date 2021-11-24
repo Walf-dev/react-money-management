@@ -1,107 +1,161 @@
-import * as Yup from 'yup';
-import { useState } from 'react';
-import { Icon } from '@iconify/react';
-import { useFormik, Form, FormikProvider } from 'formik';
-import eyeFill from '@iconify/icons-eva/eye-fill';
-import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
-import { useNavigate } from 'react-router-dom';
+import * as Yup from "yup";
+import React, { useContext, useState } from "react";
+import { Icon } from "@iconify/react";
+import { useFormik, Form, FormikProvider } from "formik";
+import eyeFill from "@iconify/icons-eva/eye-fill";
+import eyeOffFill from "@iconify/icons-eva/eye-off-fill";
+import { useHistory, Link } from "react-router-dom";
+
 // material
-import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import {
+  Stack,
+  TextField,
+  IconButton,
+  InputAdornment,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+
+import {
+  DispatchUserContext,
+  UserContext,
+} from "../../../state/contexts/contexts";
+import { signUpWithEmailAndPassword, addUserToCollection } from "../../../auth/auth";
+import {
+  userLoginRequest,
+  userLoginFailure,
+  userLoginSuccess,
+} from "../../../state/actions/userActionTypes";
+import firebase, { auth } from "../../../firebase";
 
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
+  const history = useHistory();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [keepUserLoggedIn, setKeepUserLoggedIn] = useState(true);
 
-  const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .min(2, 'Too Short!')
-      .max(50, 'Too Long!')
-      .required('First name required'),
-    lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required')
+  const dispatch = useContext(DispatchUserContext);
+  const { isLoading } = useContext(UserContext);
+  const { checkUserContext } = useContext(UserContext);
+  const [password, setPassword] = React.useState({
+    value: "",
+    showPassword: false,
   });
 
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: ''
-    },
-    validationSchema: RegisterSchema,
-    onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+  const handleChange = (prop) => (event) => {
+    setPassword({ ...password, [prop]: event.target.value });
+  };
+
+  const handleClickShowPassword = () => {
+    setPassword({ ...password, showPassword: !password.showPassword });
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const user = {
+    name,
+    email,
+    password: password.value,
+  };
+
+  const firestoreUserDetails = {
+    name,
+    email,
+    admin: true,
+    status:"active",
+  };
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    if (!isLoading) {
+      dispatch(userLoginRequest());
+      if (!keepUserLoggedIn) {
+        // Auth states are now persisted in the current
+        // session only. Closing the window would clear any existing state even
+        // if a user forgets to sign out.
+        auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+      }
+      signUpWithEmailAndPassword(user)
+        .then((user) => {
+          addUserToCollection(firestoreUserDetails)
+          dispatch(userLoginSuccess(user));
+          history.push("/dashboard/app");
+        })
+        .catch((err) => dispatch(userLoginFailure(err)));
     }
-  });
-
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+  };
 
   return (
-    <FormikProvider value={formik}>
-      <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              fullWidth
-              label="First name"
-              {...getFieldProps('firstName')}
-              error={Boolean(touched.firstName && errors.firstName)}
-              helperText={touched.firstName && errors.firstName}
-            />
-
-            <TextField
-              fullWidth
-              label="Last name"
-              {...getFieldProps('lastName')}
-              error={Boolean(touched.lastName && errors.lastName)}
-              helperText={touched.lastName && errors.lastName}
-            />
-          </Stack>
-
+    <form autoComplete="off" noValidate onSubmit={handleOnSubmit}>
+      <Stack spacing={3}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField
             fullWidth
-            autoComplete="username"
-            type="email"
-            label="Email address"
-            {...getFieldProps('email')}
-            error={Boolean(touched.email && errors.email)}
-            helperText={touched.email && errors.email}
+            required
+            id="email"
+            label="User name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
-
-          <TextField
-            fullWidth
-            autoComplete="current-password"
-            type={showPassword ? 'text' : 'password'}
-            label="Password"
-            {...getFieldProps('password')}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton edge="end" onClick={() => setShowPassword((prev) => !prev)}>
-                    <Icon icon={showPassword ? eyeFill : eyeOffFill} />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
-          />
-
-          <LoadingButton
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-            loading={isSubmitting}
-          >
-            Register
-          </LoadingButton>
         </Stack>
-      </Form>
-    </FormikProvider>
+
+        <TextField
+          fullWidth
+          autoComplete="email"
+          type="email"
+          label="Email address"
+          id="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <TextField
+          fullWidth
+          autoComplete="current-password"
+          label="Password"
+          name="password"
+          value={password.value}
+          type={password.showPassword ? "text" : "password"}
+          onChange={handleChange("value")}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  <Icon icon={password.showPassword ? eyeFill : eyeOffFill} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={keepUserLoggedIn}
+              color="primary"
+              onClick={(e) => setKeepUserLoggedIn(e.target.checked)}
+            />
+          }
+          label="Keep me logged in"
+        />
+
+        <LoadingButton fullWidth size="large" type="submit" variant="contained">
+          {isLoading ? `Signing up...` : `Sign Up`}{" "}
+        </LoadingButton>
+      </Stack>
+    </form>
   );
 }

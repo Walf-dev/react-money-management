@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
-import { Form, FormikProvider } from 'formik';
 import closeFill from '@iconify/icons-eva/close-fill';
 import roundClearAll from '@iconify/icons-ic/round-clear-all';
 import roundFilterList from '@iconify/icons-ic/round-filter-list';
@@ -66,9 +65,7 @@ export default function ShopFilterSidebar({
   onResetFilter,
   onOpenFilter,
   onCloseFilter,
-  formik
 }) {
-  const { values, getFieldProps, handleChange } = formik;
 
   return (
     <>
@@ -81,8 +78,7 @@ export default function ShopFilterSidebar({
         Filters&nbsp;
       </Button>
 
-      <FormikProvider value={formik}>
-        <Form autoComplete="off" noValidate>
+        <form autoComplete="off" noValidate>
           <Drawer
             anchor="right"
             open={isOpenFilter}
@@ -119,9 +115,7 @@ export default function ShopFilterSidebar({
                         key={item}
                         control={
                           <Checkbox
-                            {...getFieldProps('gender')}
                             value={item}
-                            checked={values.gender.includes(item)}
                           />
                         }
                         label={item}
@@ -134,7 +128,7 @@ export default function ShopFilterSidebar({
                   <Typography variant="subtitle1" gutterBottom>
                     Category
                   </Typography>
-                  <RadioGroup {...getFieldProps('category')}>
+                  <RadioGroup>
                     {FILTER_CATEGORY_OPTIONS.map((item) => (
                       <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
                     ))}
@@ -148,8 +142,6 @@ export default function ShopFilterSidebar({
                   <ColorManyPicker
                     name="colors"
                     colors={FILTER_COLOR_OPTIONS}
-                    onChange={handleChange}
-                    onChecked={(color) => values.colors.includes(color)}
                     sx={{ maxWidth: 36 * 4 }}
                   />
                 </div>
@@ -158,7 +150,7 @@ export default function ShopFilterSidebar({
                   <Typography variant="subtitle1" gutterBottom>
                     Price
                   </Typography>
-                  <RadioGroup {...getFieldProps('priceRange')}>
+                  <RadioGroup>
                     {FILTER_PRICE_OPTIONS.map((item) => (
                       <FormControlLabel
                         key={item.value}
@@ -174,7 +166,7 @@ export default function ShopFilterSidebar({
                   <Typography variant="subtitle1" gutterBottom>
                     Rating
                   </Typography>
-                  <RadioGroup {...getFieldProps('rating')}>
+                  <RadioGroup>
                     {FILTER_RATING_OPTIONS.map((item, index) => (
                       <FormControlLabel
                         key={item}
@@ -196,9 +188,6 @@ export default function ShopFilterSidebar({
                             opacity: 0.48,
                             '& > *': { bgcolor: 'transparent' }
                           },
-                          ...(values.rating.includes(item) && {
-                            bgcolor: 'background.neutral'
-                          })
                         }}
                       />
                     ))}
@@ -221,8 +210,7 @@ export default function ShopFilterSidebar({
               </Button>
             </Box>
           </Drawer>
-        </Form>
-      </FormikProvider>
+        </form>
     </>
   );
 }

@@ -1,5 +1,4 @@
 import { Icon } from '@iconify/react';
-import appleFilled from '@iconify/icons-ant-design/apple-filled';
 // material
 import { alpha, styled } from '@mui/material/styles';
 import { Card, Typography } from '@mui/material';
@@ -13,7 +12,7 @@ const RootStyle = styled(Card)(({ theme }) => ({
   textAlign: 'center',
   padding: theme.spacing(5, 0),
   color: theme.palette.info.darker,
-  backgroundColor: theme.palette.info.lighter
+  backgroundColor: theme.palette.info.light
 }));
 
 const IconWrapperStyle = styled('div')(({ theme }) => ({
@@ -34,17 +33,17 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const TOTAL = 1352831;
+const TOTAL = 234;
 
-export default function AppNewUsers() {
+export default function MostSpentDay() {
   return (
     <RootStyle>
       <IconWrapperStyle>
-        <Icon icon={appleFilled} width={24} height={24} />
+        <Icon icon="fa-solid:money-bill-alt" width={30} height={30} />
       </IconWrapperStyle>
       <Typography variant="h3">{fShortenNumber(TOTAL)}</Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
-        New Users
+      Most Spent Day
       </Typography>
     </RootStyle>
   );

@@ -1,24 +1,25 @@
 // scroll bar
-import 'simplebar/src/simplebar.css';
+import "simplebar/src/simplebar.css";
 
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 
 //
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import reportWebVitals from './reportWebVitals';
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+import reportWebVitals from "./reportWebVitals";
+import history from "./history";
 
 // ----------------------------------------------------------------------
 
 ReactDOM.render(
   <HelmetProvider>
-    <BrowserRouter>
+    <BrowserRouter history={history} basename={process.env.PUBLIC_URL}>
       <App />
     </BrowserRouter>
   </HelmetProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to enable client cache, register instead.

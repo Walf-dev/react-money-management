@@ -1,5 +1,4 @@
 import { Icon } from '@iconify/react';
-import bugFilled from '@iconify/icons-ant-design/bug-filled';
 // material
 import { alpha, styled } from '@mui/material/styles';
 import { Card, Typography } from '@mui/material';
@@ -12,8 +11,8 @@ const RootStyle = styled(Card)(({ theme }) => ({
   boxShadow: 'none',
   textAlign: 'center',
   padding: theme.spacing(5, 0),
-  color: theme.palette.error.darker,
-  backgroundColor: theme.palette.error.lighter
+  color: theme.palette.warning.darker,
+  backgroundColor: theme.palette.warning.lighter
 }));
 
 const IconWrapperStyle = styled('div')(({ theme }) => ({
@@ -25,26 +24,26 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
   height: theme.spacing(8),
   justifyContent: 'center',
   marginBottom: theme.spacing(3),
-  color: theme.palette.error.dark,
-  backgroundImage: `linear-gradient(135deg, ${alpha(theme.palette.error.dark, 0)} 0%, ${alpha(
-    theme.palette.error.dark,
+  color: theme.palette.warning.dark,
+  backgroundImage: `linear-gradient(135deg, ${alpha(theme.palette.warning.dark, 0)} 0%, ${alpha(
+    theme.palette.warning.dark,
     0.24
   )} 100%)`
 }));
 
 // ----------------------------------------------------------------------
 
-const TOTAL = 234;
+const TOTAL = 1723315;
 
-export default function AppBugReports() {
+export default function ThisWeek() {
   return (
     <RootStyle>
       <IconWrapperStyle>
-        <Icon icon={bugFilled} width={24} height={24} />
+        <Icon  icon="iwwa:week" width={30} height={30} />
       </IconWrapperStyle>
       <Typography variant="h3">{fShortenNumber(TOTAL)}</Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
-        Bug Reports
+      This Week
       </Typography>
     </RootStyle>
   );
