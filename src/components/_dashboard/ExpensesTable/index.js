@@ -24,14 +24,8 @@ import {
   Modal,
   Fade,
   Box,
-  TextField
+  TextField,
 } from "@mui/material";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-// components
 import Page from "../../Page";
 import Label from "../../Label";
 import Scrollbar from "../../Scrollbar";
@@ -66,7 +60,7 @@ const style = {
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
-  borderRadius:"5px",
+  borderRadius: "5px",
 };
 //------------------------------------------------------------------------
 function descendingComparator(a, b, orderBy) {
@@ -196,20 +190,7 @@ export default function ExpensesTable() {
           >
             New Expense
           </Button>
-          <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
-          </DialogContentText>
-          <NewExpenseForm/>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button>
-        </DialogActions>
-      </Dialog>
+          <NewExpenseForm open={open} handleClose={handleClose}/>
         </Stack>
 
         <Card>

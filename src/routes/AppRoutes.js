@@ -30,7 +30,7 @@ export default function AppRoutes() {
   return (
     <Router basename="/">
       <Switch>
-        <PrivateRoute exact path="/" component={DashboardLayout}/>
+        <Route exact path="/" component={Login}/>
         <PrivateRoute exact path="/dashboard/app" component={DashboardApp}/>
         <PrivateRoute exact path="/dashboard/user" component={User}/>
         {/*<PrivateRoute exact path="/dashboard/products" component={Products}/>*/}
