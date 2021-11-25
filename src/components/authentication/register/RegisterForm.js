@@ -97,7 +97,6 @@ export default function RegisterForm() {
           <TextField
             fullWidth
             required
-            id="email"
             label="User name"
             name="name"
             autoComplete="name"
