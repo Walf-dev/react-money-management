@@ -3,7 +3,7 @@ export const addNewExpenseRequest = () => {
       type: "ADD_EXPENSE_REQUEST",
     };
   };
-  
+
   export const addExpenseSuccess = (user) => {
     return {
       type: "ADD_EXPENSE_SUCCESS",

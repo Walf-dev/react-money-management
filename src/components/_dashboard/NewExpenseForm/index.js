@@ -31,9 +31,11 @@ import {
   DispatchExpenseContext,
   ExpenseContext,
 } from "../../../state/contexts/contexts";
+
 //-------------------------------
 import { Icon } from "@iconify/react";
-
+//--------------------------
+import firebase, { firestore, auth } from "../../../firebase";
 /*const currencies = [
   {
     value: "USD",
@@ -100,19 +102,50 @@ const categories = [
   },
 ];
 
+//Add loggedIn user to `users` collection
+export async function addExpenseToCollection(expense) {
+  const db = firebase.firestore();
+  const expenses = db.collection("expenses");
+  try {
+    await expenses.add(expense);
+  } catch (error) {
+    console.log("Expense not added to collection due to", error);
+  }
+}
+
 export default function NewExpenseForm({ handleClose, open }) {
   const [category, setCategory] = React.useState("");
-  const [icon, setIcon] = React.useState("");
   const [date, setdate] = React.useState(new Date());
   const [amount, setAmount] = React.useState("");
   const [comment, setComment] = React.useState("");
+  const dispatch = useContext(DispatchExpenseContext);
+  const { isLoading } = useContext(ExpenseContext);
+  console.log(ExpenseContext);
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    return new Promise((resolve, reject) => {
+      if (!category) {
+        return reject("Choose a category");
+      } else if (!date || !amount || !comment) {
+        return reject("Fill in all the fields");
+      }
+      if (!isLoading) {
+        dispatch(addNewExpenseRequest());
+        addExpenseToCollection(expenseObject)
+          .then((expense) => {
+            dispatch(addExpenseSuccess(expense));
+          })
+          .catch((err) => dispatch(addExpenseFailure(err)));
+      }
+    });
+  };
 
   const expenseObject = {
     category: category,
-    icon: icon,
     date: date,
     amount: amount,
     comment: comment,
+    user: auth.currentUser.uid,
   };
   console.log(expenseObject);
 
@@ -122,7 +155,6 @@ export default function NewExpenseForm({ handleClose, open }) {
 
   const handleChange = (event) => {
     setCategory(event.target.value);
-    setIcon(event.target.icon);
   };
 
   const handleAmount = (event) => {
@@ -141,7 +173,7 @@ export default function NewExpenseForm({ handleClose, open }) {
             Fiil-in the form below to add a new expense. Expense should be
             greater than 0.
           </DialogContentText>
-          <form>
+          <form noValidate onSubmit={handleOnSubmit}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DesktopDatePicker
                 label="Choose The Date"
@@ -178,7 +210,6 @@ export default function NewExpenseForm({ handleClose, open }) {
               name="category"
               autoComplete="category"
               value={category}
-              icon={icon}
               onChange={handleChange}
               sx={{ mb: 3 }}
               InputLabelProps={{
@@ -186,11 +217,7 @@ export default function NewExpenseForm({ handleClose, open }) {
               }}
             >
               {categories.map((option) => (
-                <MenuItem
-                  key={option.value}
-                  value={option.value}
-                  icon={option.icon}
-                >
+                <MenuItem key={option.value} value={option.value}>
                   {option.value}
                   <Icon
                     icon={option.icon}
@@ -211,12 +238,8 @@ export default function NewExpenseForm({ handleClose, open }) {
             />
             <DialogActions sx={{ mt: 2 }}>
               <Button onClick={handleClose}>Cancel</Button>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                onClick={handleClose}
-              >
-                Submit
+              <LoadingButton type="submit" variant="contained">
+                {isLoading ? `Submitting...` : `Submit`}
               </LoadingButton>
             </DialogActions>
           </form>
