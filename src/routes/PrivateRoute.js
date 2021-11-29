@@ -6,7 +6,7 @@ import DashboardLayout from "../layouts/dashboard";
 
 const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
   const user = useGetCurrentUser();
-  console.log(user);
+  //console.log(user);
   if (user === null)
     return (
       <div>

@@ -270,6 +270,7 @@ export const useGetCurrentUser = () => {
             displayName: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
+            id: user.uid
           };
           setUser(person);
         }

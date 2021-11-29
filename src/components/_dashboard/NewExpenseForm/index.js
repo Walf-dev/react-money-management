@@ -31,11 +31,15 @@ import {
   DispatchExpenseContext,
   ExpenseContext,
 } from "../../../state/contexts/contexts";
-
+import {
+  DispatchUserContext,
+  UserContext,
+} from "../../../state/contexts/contexts";
 //-------------------------------
 import { Icon } from "@iconify/react";
 //--------------------------
 import firebase, { firestore, auth } from "../../../firebase";
+import {useGetCurrentUser} from "../../../auth/auth";
 /*const currencies = [
   {
     value: "USD",
@@ -102,15 +106,24 @@ const categories = [
   },
 ];
 
-//Add loggedIn user to `users` collection
-export async function addExpenseToCollection(expense) {
-  const db = firebase.firestore();
-  const expenses = db.collection("expenses");
-  try {
-    await expenses.add(expense);
-  } catch (error) {
-    console.log("Expense not added to collection due to", error);
+//Add expense to `expenses` collection
+async function addExpenseToCollection({category, date, amount, comment, handleClose}, expense) {
+  return new Promise((resolve, reject) => {
+  if (!category) {
+    return reject("Choose a category");
+  } else if (!date || !amount || !comment) {
+    return reject("Fill in all the fields");
   }
+  const db = firebase.firestore();
+  db.collection("expenses").add(expense)
+  .then(() =>{
+    resolve("Expense added successfully !");
+    handleClose();
+  })
+  .catch((error) => {
+    reject("Expense not added to collection due to", error);
+  });
+})
 }
 
 export default function NewExpenseForm({ handleClose, open }) {
@@ -120,32 +133,28 @@ export default function NewExpenseForm({ handleClose, open }) {
   const [comment, setComment] = React.useState("");
   const dispatch = useContext(DispatchExpenseContext);
   const { isLoading } = useContext(ExpenseContext);
-  console.log(ExpenseContext);
+  const user = useGetCurrentUser();
+
+  console.log(user)
+
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    return new Promise((resolve, reject) => {
-      if (!category) {
-        return reject("Choose a category");
-      } else if (!date || !amount || !comment) {
-        return reject("Fill in all the fields");
-      }
       if (!isLoading) {
         dispatch(addNewExpenseRequest());
         addExpenseToCollection(expenseObject)
           .then((expense) => {
-            dispatch(addExpenseSuccess(expense));
+            dispatch(addExpenseSuccess(expenseObject));
           })
           .catch((err) => dispatch(addExpenseFailure(err)));
       }
-    });
   };
-
-  const expenseObject = {
+  
+  let expenseObject = {
     category: category,
     date: date,
     amount: amount,
     comment: comment,
-    user: auth.currentUser.uid,
+    user: user ? user.id : null,
   };
   console.log(expenseObject);
 
@@ -180,7 +189,6 @@ export default function NewExpenseForm({ handleClose, open }) {
                 inputFormat="MM/dd/yyyy"
                 name="date"
                 autoComplete="date"
-                autoFocus
                 value={date}
                 onChange={handleDate}
                 renderInput={(params) => <TextField {...params} />}
@@ -192,6 +200,7 @@ export default function NewExpenseForm({ handleClose, open }) {
             </LocalizationProvider>
             <TextField
               fullWidth
+              autoFocus
               label="Enter The Expense Amount"
               name="amount"
               autoComplete="amount"
