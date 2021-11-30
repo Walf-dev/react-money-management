@@ -31,15 +31,13 @@ import {
   DispatchExpenseContext,
   ExpenseContext,
 } from "../../../state/contexts/contexts";
-import {
-  DispatchUserContext,
-  UserContext,
-} from "../../../state/contexts/contexts";
+
 //-------------------------------
 import { Icon } from "@iconify/react";
 //--------------------------
 import firebase, { firestore, auth } from "../../../firebase";
-import {useGetCurrentUser} from "../../../auth/auth";
+//--------------------------------------------------------
+import ExpensePopup from "../../Popup/ExpensePopup";
 /*const currencies = [
   {
     value: "USD",
@@ -106,55 +104,82 @@ const categories = [
   },
 ];
 
-//Add expense to `expenses` collection
-async function addExpenseToCollection({category, date, amount, comment, handleClose}, expense) {
-  return new Promise((resolve, reject) => {
-  if (!category) {
-    return reject("Choose a category");
-  } else if (!date || !amount || !comment) {
-    return reject("Fill in all the fields");
-  }
-  const db = firebase.firestore();
-  db.collection("expenses").add(expense)
-  .then(() =>{
-    resolve("Expense added successfully !");
-    handleClose();
-  })
-  .catch((error) => {
-    reject("Expense not added to collection due to", error);
-  });
-})
-}
-
 export default function NewExpenseForm({ handleClose, open }) {
   const [category, setCategory] = React.useState("");
   const [date, setdate] = React.useState(new Date());
   const [amount, setAmount] = React.useState("");
   const [comment, setComment] = React.useState("");
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState("");
+  const [severity, setSeverity] = React.useState("success");
   const dispatch = useContext(DispatchExpenseContext);
   const { isLoading } = useContext(ExpenseContext);
-  const user = useGetCurrentUser();
 
-  console.log(user)
+  const resetForm = () => {
+    setCategory("");
+    setdate(new Date());
+    setAmount("");
+    setComment("");
+}
+  //Add expense to `expenses` collection
+  async function addExpenseToCollection(expense, reject, resolve) {
+    const db = firebase.firestore();
+    const expenses = db.collection("expenses");
+    try {
+      await expenses.add(expense);
+    } catch (error) {
+      reject(
+        setOpenSnackbar(true),
+        setSnackbarMessage("Expense not added to collection due to ", +error),
+        setSeverity("error")
+      );
+    }
+  }
 
-  const handleOnSubmit = (e) => {
+  async function handleOnSubmit(e) {
     e.preventDefault();
+    return new Promise((resolve, reject) => {
+      if (!date || !amount || !comment || !category) {
+        return reject(
+          setOpenSnackbar(true),
+          setSnackbarMessage("Fill in all the fields"),
+          setSeverity("warning")
+        );
+      }
       if (!isLoading) {
         dispatch(addNewExpenseRequest());
         addExpenseToCollection(expenseObject)
           .then((expense) => {
-            dispatch(addExpenseSuccess(expenseObject));
+            dispatch(addExpenseSuccess(expense));
+            resolve(
+              setOpenSnackbar(true),
+              setSnackbarMessage("Expense added successfully"),
+              setSeverity("success")
+            );
+            document.getElementById("addexpenseform").reset();
+            resetForm();
           })
-          .catch((err) => dispatch(addExpenseFailure(err)));
+          .catch((err) => {
+            dispatch(addExpenseFailure(err));
+            reject(
+              setOpenSnackbar(true),
+              setSnackbarMessage(
+                "Adding expense failed due to: " + err.message
+              ),
+              setSeverity("error")
+            );
+          });
       }
-  };
-  
-  let expenseObject = {
+    });
+  }
+
+  const expenseObject = {
     category: category,
     date: date,
+    day: date.getDay(),
     amount: amount,
     comment: comment,
-    user: user ? user.id : null,
+    user: auth.currentUser.uid,
   };
   console.log(expenseObject);
 
@@ -182,13 +207,14 @@ export default function NewExpenseForm({ handleClose, open }) {
             Fiil-in the form below to add a new expense. Expense should be
             greater than 0.
           </DialogContentText>
-          <form noValidate onSubmit={handleOnSubmit}>
+          <form noValidate onSubmit={handleOnSubmit} id="addexpenseform">
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DesktopDatePicker
                 label="Choose The Date"
                 inputFormat="MM/dd/yyyy"
                 name="date"
                 autoComplete="date"
+                autoFocus
                 value={date}
                 onChange={handleDate}
                 renderInput={(params) => <TextField {...params} />}
@@ -200,7 +226,6 @@ export default function NewExpenseForm({ handleClose, open }) {
             </LocalizationProvider>
             <TextField
               fullWidth
-              autoFocus
               label="Enter The Expense Amount"
               name="amount"
               autoComplete="amount"
@@ -252,6 +277,13 @@ export default function NewExpenseForm({ handleClose, open }) {
               </LoadingButton>
             </DialogActions>
           </form>
+          <ExpensePopup
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+            message={snackbarMessage}
+            setSnackbarMessage={setSnackbarMessage}
+            severity={severity}
+          />
         </DialogContent>
       </Dialog>
     </>

@@ -1,4 +1,4 @@
-import firebase, { auth } from "../firebase";
+import firebase, { auth,firestore } from "../firebase";
 import { useState, useEffect } from "react";
 import history from "../history";
 
@@ -282,11 +282,10 @@ export const useGetCurrentUser = () => {
 
 //Add loggedIn user to `users` collection
 export async function addUserToCollection(user) {
-  const db = firebase.firestore();
-  const users = db.collection("users");
+  const users = firestore.collection("users");
   try {
     await users.add(user);
   } catch (error) {
-    console.log("User not added to collection");
+    console.log("User not added to collection due to: " + error);
   }
 }

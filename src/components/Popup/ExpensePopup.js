@@ -1,27 +1,39 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Snackbar, Slide } from "@mui/material";
-import { ExpenseContext } from "../../state/contexts/contexts";
+import * as React from "react";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
-function ExpensePopup() {
-  const [open, setOpen] = useState(false);
-  const { expenseError } = useContext(ExpenseContext);
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
-  useEffect(() => {
-    if (expenseError != null) {
-      setOpen(true);
+export default function ExpensePopup({
+  openSnackbar,
+  setOpenSnackbar,
+  setSnackbarMessage,
+  severity,
+  message,
+}) {
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
     }
-  }, [expenseError]);
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+  };
 
   return (
-    <Snackbar
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      TransitionComponent={Slide}
-      open={open}
-      onClose={() => setOpen(false)}
-      autoHideDuration={5000}
-      message={expenseError && expenseError}
-    />
+    <Stack spacing={2} sx={{ width: "100%" }}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
+    </Stack>
   );
 }
-
-export default ExpensePopup;
