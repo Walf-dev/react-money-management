@@ -4,10 +4,10 @@ export const addNewExpenseRequest = () => {
     };
   };
 
-  export const addExpenseSuccess = (user) => {
+  export const addExpenseSuccess = (expense) => {
     return {
       type: "ADD_EXPENSE_SUCCESS",
-      payload: user,
+      payload: expense,
     };
   };
   

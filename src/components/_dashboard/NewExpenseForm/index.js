@@ -1,12 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 // material
 import {
-  Box,
-  Grid,
-  Container,
-  Typography,
   TextField,
-  Divider,
   MenuItem,
   Button,
 } from "@mui/material";
@@ -35,9 +30,13 @@ import {
 //-------------------------------
 import { Icon } from "@iconify/react";
 //--------------------------
-import firebase, { firestore, auth } from "../../../firebase";
+import firebase from "../../../firebase";
 //--------------------------------------------------------
 import ExpensePopup from "../../Popup/ExpensePopup";
+//------------------------
+import { useGetCurrentUser } from "../../../auth/auth";
+//--------------------------------------------------------
+
 /*const currencies = [
   {
     value: "USD",
@@ -113,14 +112,14 @@ export default function NewExpenseForm({ handleClose, open }) {
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [severity, setSeverity] = React.useState("success");
   const dispatch = useContext(DispatchExpenseContext);
-  const { isLoading } = useContext(ExpenseContext);
+  const { loading } = useContext(ExpenseContext);
 
   const resetForm = () => {
     setCategory("");
     setdate(new Date());
     setAmount("");
     setComment("");
-}
+  };
   //Add expense to `expenses` collection
   async function addExpenseToCollection(expense, reject, resolve) {
     const db = firebase.firestore();
@@ -136,6 +135,8 @@ export default function NewExpenseForm({ handleClose, open }) {
     }
   }
 
+  const userId = useGetCurrentUser();
+
   async function handleOnSubmit(e) {
     e.preventDefault();
     return new Promise((resolve, reject) => {
@@ -146,7 +147,7 @@ export default function NewExpenseForm({ handleClose, open }) {
           setSeverity("warning")
         );
       }
-      if (!isLoading) {
+      if (!loading) {
         dispatch(addNewExpenseRequest());
         addExpenseToCollection(expenseObject)
           .then((expense) => {
@@ -179,9 +180,9 @@ export default function NewExpenseForm({ handleClose, open }) {
     day: date.getDay(),
     amount: amount,
     comment: comment,
-    user: auth.currentUser.uid,
+    uid: userId ? userId.id : null,
   };
-  console.log(expenseObject);
+  //console.log(expenseObject);
 
   const handleDate = (newValue) => {
     setdate(newValue);
@@ -198,6 +199,7 @@ export default function NewExpenseForm({ handleClose, open }) {
   const handleComment = (event) => {
     setComment(event.target.value);
   };
+
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
@@ -273,7 +275,7 @@ export default function NewExpenseForm({ handleClose, open }) {
             <DialogActions sx={{ mt: 2 }}>
               <Button onClick={handleClose}>Cancel</Button>
               <LoadingButton type="submit" variant="contained">
-                {isLoading ? `Submitting...` : `Submit`}
+                {loading ? `Submitting...` : `Submit`}
               </LoadingButton>
             </DialogActions>
           </form>

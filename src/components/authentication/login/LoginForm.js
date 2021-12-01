@@ -39,7 +39,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [keepUserLoggedIn, setKeepUserLoggedIn] = useState(true);
   const dispatch = useContext(DispatchUserContext);
-  const { isLoading } = useContext(UserContext);
+  const { loading } = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = React.useState({
     value: "",
@@ -59,7 +59,7 @@ export default function LoginForm() {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    if (!isLoading) {
+    if (!loading) {
       dispatch(userLoginRequest());
       if (!keepUserLoggedIn) {
         // Auth states are now persisted in the current
@@ -92,7 +92,7 @@ export default function LoginForm() {
     validationSchema: LoginSchema,
     onSubmit: (e) => {
       e.preventDefault();
-      if (!isLoading) {
+      if (!loading) {
         dispatch(userLoginRequest());
         if (!keepUserLoggedIn) {
           // Auth states are now persisted in the current
@@ -187,7 +187,7 @@ export default function LoginForm() {
       </Stack>
 
       <LoadingButton fullWidth size="large" type="submit" variant="contained">
-        {isLoading ? `Signing In...` : `Sign In`}
+        {loading ? `Signing In...` : `Sign In`}
       </LoadingButton>
     </form>
   );

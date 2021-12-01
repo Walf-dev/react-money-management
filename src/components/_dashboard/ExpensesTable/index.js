@@ -33,36 +33,21 @@ import SearchNotFound from "../../SearchNotFound";
 import UserListHead from "./UserListHead";
 import UserListToolbar from "./UserListToolbar";
 import UserMoreMenu from "./UserMoreMenu";
-//
+//--------------------------------
 import USERLIST from "../../../_mocks_/user";
-//
+//-------------------------------------------
 import { fDate } from "../../../utils/formatTime";
-
 // ----------------------------------------------------------------------
-
+import {useExpensesList} from "../../../functions/expense";
 const TABLE_HEAD = [
-  { id: "num", label: "#", alignRight: false },
   { id: "date", label: "Date", alignRight: false },
   { id: "category", label: "Category", alignRight: false },
-  { id: "expense", label: "Expense", alignRight: false },
+  { id: "amount", label: "Amount", alignRight: false },
   { id: "comment", label: "Comments", alignRight: false },
-  { id: "" },
+  { id: "day", label: "Day", alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  maxWidth: 800,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-  borderRadius: "5px",
-};
-//------------------------------------------------------------------------
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -117,6 +102,16 @@ export default function ExpensesTable() {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+
+  const expenseList= useExpensesList();
+
+  const result = expenseList ? expenseList.map((item, i) => {
+    return (
+      <span key={i}>
+        amount: {item.amount}
+        </span>
+    )
+  }) : null;
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {

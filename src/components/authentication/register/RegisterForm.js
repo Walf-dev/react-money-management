@@ -38,7 +38,7 @@ export default function RegisterForm() {
   const [keepUserLoggedIn, setKeepUserLoggedIn] = useState(true);
 
   const dispatch = useContext(DispatchUserContext);
-  const { isLoading } = useContext(UserContext);
+  const { loading } = useContext(UserContext);
   const { checkUserContext } = useContext(UserContext);
   const [password, setPassword] = React.useState({
     value: "",
@@ -72,7 +72,7 @@ export default function RegisterForm() {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    if (!isLoading) {
+    if (!loading) {
       dispatch(userLoginRequest());
       if (!keepUserLoggedIn) {
         // Auth states are now persisted in the current
@@ -152,7 +152,7 @@ export default function RegisterForm() {
         />
 
         <LoadingButton fullWidth size="large" type="submit" variant="contained">
-          {isLoading ? `Signing up...` : `Sign Up`}{" "}
+          {loading ? `Signing up...` : `Sign Up`}{" "}
         </LoadingButton>
       </Stack>
     </form>

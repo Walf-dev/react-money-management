@@ -7,25 +7,25 @@ const reducer = (state = INITIAL_STATE, { type, payload }) => {
     case "USER_LOGIN_REQUEST":
       return {
         ...state,
-        isLoading: true,
+        loading: true,
       };
     case "USER_LOGIN_SUCCESS":
       return {
         ...state,
         user: payload,
-        isLoading: false,
+        loading: false,
         authenticated: true,
       };
     case "USER_LOGIN_FAILURE":
       return {
         ...state,
         error: payload,
-        isLoading: false,
+        loading: false,
       };
     case "USER_LOGOUT":
       return {
         ...state,
-        isLoading: false,
+        loading: false,
         user: null,
       };
     case "GET_CURRENT_USER":
@@ -42,64 +42,64 @@ const reducer = (state = INITIAL_STATE, { type, payload }) => {
     case "EMAIL_SENT":
       return {
         ...state,
-        isLoading: false,
+        loading: false,
       };
     case "SEND_EMAIL_LINK_REQUEST":
       return {
         ...state,
-        isLoading: true,
+        loading: true,
       };
     case "SEND_EMAIL_LINK_SUCCESS":
       return {
         ...state,
-        isLoading: false,
+        loading: false,
       };
 
     case "SEND_EMAIL_LINK_FAILURE":
       return {
         ...state,
         error: payload,
-        isLoading: false,
+        loading: false,
       };
 //----------------------------------------------------------------
     case "ADD_EXPENSE_REQUEST":
       return {
         ...state,
-        isLoading: true,
+        loading: true,
       };
 
     case "ADD_EXPENSE_SUCCESS":
       return {
         ...state,
         expense: payload,
-        isLoading: false,
+        loading: false,
       };
 
     case "ADD_EXPENSE_FAILURE":
       return {
         ...state,
         error: payload,
-        isLoading: false,
+        loading: false,
       };
 //-------------------------------
 case "UPDATE_EXPENSE_REQUEST":
   return {
     ...state,
-    isLoading: true,
+    loading: true,
   };
 
 case "UPDATE_EXPENSE_SUCCESS":
   return {
     ...state,
     expense: payload,
-    isLoading: false,
+    loading: false,
   };
 
 case "UPDATE_EXPENSE_FAILURE":
   return {
     ...state,
     error: payload,
-    isLoading: false,
+    loading: false,
   };
 
     default:
