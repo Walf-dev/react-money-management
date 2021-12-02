@@ -4,24 +4,35 @@ import { useGetCurrentUser } from "../auth/auth";
 //----------------------------------------------------------------
 import firebase, { firestore } from "../firebase";
 //------------------------------
+import {
+  getExpenseRequest,
+  getExpenseFailure,
+  getExpenseSuccess,
+} from "../state/actions/expenseActionTypes";
+//---------------------------------
+import {
+  DispatchExpenseContext,
+  ExpenseContext,
+} from "../state/contexts/contexts";
+//------------------------------------
 
 export const useExpensesList = () => {
-  const [expensesCollection, setExpensesCollection] = useState(null);
+  const dispatch = useContext(DispatchExpenseContext);
+  const { expenses } = useContext(ExpenseContext);
+  //console.log(expenses)
   const userId = useGetCurrentUser();
-  const array = [];
   //listen to expenses collection changes
-  useEffect(() => {
     if (userId) {
       return firestore
         .collection("expenses")
         .where("uid", "==", userId.id)
+        .orderBy("date", "desc")
         .onSnapshot((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            array.push(doc.data());
-            setExpensesCollection(array);
-          });
-        });
+          const data = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          dispatch(getExpenseSuccess(data))
+        })
     }
-  });
-  return expensesCollection;
 };

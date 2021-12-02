@@ -102,6 +102,27 @@ case "UPDATE_EXPENSE_FAILURE":
     loading: false,
   };
 
+  //----------------------------------------------------------------
+  case "GET_EXPENSE_REQUEST":
+    return {
+      ...state,
+      loading: true,
+    };
+
+  case "GET_EXPENSE_SUCCESS":
+    return {
+      ...state,
+      expenses: payload,
+      loading: false,
+    };
+
+  case "GET_EXPENSE_FAILURE":
+    return {
+      ...state,
+      error: payload,
+      loading: false,
+    };
+
     default:
       return state;
   }

@@ -3,5 +3,5 @@ export const INITIAL_STATE = {
   error: null,
   user: null,
   authenticated: false,
-  expense: null,
+  expenses: null,
 };

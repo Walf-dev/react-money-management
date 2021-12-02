@@ -1,7 +1,7 @@
 import { filter } from "lodash";
 import { Icon } from "@iconify/react";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useState, useContext, useReducer } from "react";
 import plusFill from "@iconify/icons-eva/plus-fill";
 import { Link as RouterLink } from "react-router-dom";
 import NewExpenseForm from "../NewExpenseForm";
@@ -39,14 +39,15 @@ import USERLIST from "../../../_mocks_/user";
 import { fDate } from "../../../utils/formatTime";
 // ----------------------------------------------------------------------
 import {useExpensesList} from "../../../functions/expense";
+//---------------------------------------
+
+//---------------------------------------
 const TABLE_HEAD = [
   { id: "date", label: "Date", alignRight: false },
   { id: "category", label: "Category", alignRight: false },
   { id: "amount", label: "Amount", alignRight: false },
   { id: "comment", label: "Comments", alignRight: false },
-  { id: "day", label: "Day", alignRight: false },
 ];
-
 // ----------------------------------------------------------------------
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -88,7 +89,6 @@ export default function ExpensesTable() {
   const [orderBy, setOrderBy] = useState("category");
   const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -105,13 +105,6 @@ export default function ExpensesTable() {
 
   const expenseList= useExpensesList();
 
-  const result = expenseList ? expenseList.map((item, i) => {
-    return (
-      <span key={i}>
-        amount: {item.amount}
-        </span>
-    )
-  }) : null;
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -243,9 +236,6 @@ export default function ExpensesTable() {
                           </TableCell>
                           <TableCell align="left">{category}</TableCell>
                           <TableCell align="left">{expense}</TableCell>
-                          <TableCell align="left">
-                            {comment ? "Yes" : "No"}
-                          </TableCell>
                           <TableCell align="right">
                             <UserMoreMenu />
                           </TableCell>

@@ -150,8 +150,8 @@ export default function NewExpenseForm({ handleClose, open }) {
       if (!loading) {
         dispatch(addNewExpenseRequest());
         addExpenseToCollection(expenseObject)
-          .then((expense) => {
-            dispatch(addExpenseSuccess(expense));
+          .then(() => {
+            dispatch(addExpenseSuccess());
             resolve(
               setOpenSnackbar(true),
               setSnackbarMessage("Expense added successfully"),
