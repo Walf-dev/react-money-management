@@ -22,7 +22,7 @@ import { Stack, Button, Divider, Typography } from "@mui/material";
 // ----------------------------------------------------------------------
 
 export default function AuthSocial() {
-  const navigate = useHistory();
+  const history = useHistory();
   const dispatch = useContext(DispatchUserContext);
 
   const handleLogin = async (providerId) => {
@@ -31,7 +31,7 @@ export default function AuthSocial() {
     loginWithProvider(providerId)
       .then((user) => {
         dispatch(userLoginSuccess(user));
-        navigate("/dashboard/app", { replace: true });
+        history.replace("/dashboard/app");
       })
       .catch((err) => dispatch(userLoginFailure(err)));
   };

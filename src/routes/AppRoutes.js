@@ -1,13 +1,9 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import React, { useReducer, useEffect } from "react";
 import { useGetCurrentUser } from "../auth/auth";
-import { UserContext, DispatchUserContext } from "../state/contexts/contexts";
 import reducer from "../state/reducer/reducer.js";
 import { INITIAL_STATE } from "../state/initial_state.js";
 
-// layouts
-import DashboardLayout from "../layouts/dashboard";
-import LogoOnlyLayout from "../layouts/LogoOnlyLayout";
 //
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -16,7 +12,6 @@ import DashboardApp from "../pages/DashboardApp";
 import Blog from "../pages/Blog";
 import User from "../pages/User";
 import NotFound from "../pages/Page404";
-import firebase, { auth } from "../firebase";
 import PrivateRoute from "./PrivateRoute";
 // ----------------------------------------------------------------------
 
