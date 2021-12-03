@@ -36,6 +36,9 @@ import ExpensePopup from "../../Popup/ExpensePopup";
 //------------------------
 import { useGetCurrentUser } from "../../../auth/auth";
 //--------------------------------------------------------
+import { format, formatDistanceToNow } from 'date-fns';
+//----------------------------------
+import { fDateTime, fDate } from "../../../utils/formatTime";
 
 /*const currencies = [
   {
@@ -105,7 +108,7 @@ const categories = [
 
 export default function NewExpenseForm({ handleClose, open }) {
   const [category, setCategory] = React.useState("");
-  const [date, setdate] = React.useState(new Date());
+  const [date, setdate] = React.useState(fDate(new Date()));
   const [amount, setAmount] = React.useState("");
   const [comment, setComment] = React.useState("");
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -116,7 +119,7 @@ export default function NewExpenseForm({ handleClose, open }) {
 
   const resetForm = () => {
     setCategory("");
-    setdate(new Date());
+    setdate(fDate(new Date()));
     setAmount("");
     setComment("");
   };
@@ -177,7 +180,7 @@ export default function NewExpenseForm({ handleClose, open }) {
   const expenseObject = {
     category: category,
     date: date,
-    day: date.getDay(),
+    day: date,
     amount: amount,
     comment: comment,
     uid: userId ? userId.id : null,

@@ -1,5 +1,5 @@
 import { format, formatDistanceToNow } from 'date-fns';
-
+import { fr, en } from 'date-fns/locale'
 // ----------------------------------------------------------------------
 
 export function fDate(date) {

@@ -28,8 +28,9 @@ import {
   DispatchExpenseContext,
   ExpenseContext,
 } from "../../../state/contexts/contexts";
-
 // ----------------------------------------------------------------------
+import { useGetExpensesList,  } from "../../../functions/expense";
+//---------------------------------------
 
 const currencies = [
   {
@@ -50,7 +51,7 @@ const currencies = [
   },
 ];
 
-export default function UserMoreMenu() {
+export default function UserMoreMenu({docId}) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -93,7 +94,7 @@ export default function UserMoreMenu() {
       >
         <MenuItem sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
-            <Icon icon={trash2Outline} width={24} height={24} />
+            <Icon icon={trash2Outline} width={24} height={24}/>
           </ListItemIcon>
           <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>

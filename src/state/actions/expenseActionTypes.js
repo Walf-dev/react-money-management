@@ -58,3 +58,25 @@ export const getExpenseFailure = (err) => {
     payload: err && err.message ? err.message : err,
   };
 };
+
+//-------------------------------------------------
+
+export const deleteExpenseSuccess = (expenses) => {
+  return {
+    type: "DELETE_EXPENSE_SUCCESS",
+    payload: expenses,
+  };
+};
+
+export const deleteExpenseRequest = () => {
+  return {
+    type: "DELETE_EXPENSE_REQUEST",
+  };
+};
+
+export const deleteExpenseFailure = (err) => {
+  return {
+    type: "DELETE_EXPENSE_FAILURE",
+    payload: err && err.message ? err.message : err,
+  };
+};

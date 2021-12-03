@@ -8,6 +8,9 @@ import {
   getExpenseRequest,
   getExpenseFailure,
   getExpenseSuccess,
+  deleteExpenseFailure,
+  deleteExpenseRequest,
+  deleteExpenseSuccess,
 } from "../state/actions/expenseActionTypes";
 //---------------------------------
 import {
@@ -17,12 +20,11 @@ import {
 } from "../state/contexts/contexts";
 //------------------------------------
 
-export const useExpensesList = () => {
+export const useGetExpensesList = () => {
   const dispatch = useContext(DispatchExpenseContext);
   const { expenses } = useContext(ExpenseContext);
   const { user } = useContext(UserContext);
 
-  console.log(expenses)
   useEffect(() => {
     function getExpenses() {
       if (user && user.id && expenses==null) {
@@ -30,16 +32,40 @@ export const useExpensesList = () => {
           .collection("expenses")
           .where("uid", "==", user.id)
           .orderBy("date", "desc")
-          .get()
-          .then((result) => {
-            const data = result.docs.map((doc) => ({
-              id: doc.id,
+          .onSnapshot((snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+              docId: doc.id,
               ...doc.data(),
             }));
             dispatch(getExpenseSuccess(data));
-          });
+          })
       }
     }
     getExpenses();
   });
+};
+
+export const useDeleteExpense = () => {
+  const dispatch = useContext(DispatchExpenseContext);
+  const { expenses } = useContext(ExpenseContext);
+  const { user } = useContext(UserContext);
+
+    useEffect(() => {
+    function deleteExpense(docId) {
+      if (user && user.id && expenses != null) {
+        dispatch(deleteExpenseRequest());
+        return firestore
+          .collection("expenses")
+          .doc(docId)
+          .delete()
+          .then(() => {
+            dispatch(deleteExpenseSuccess());
+          })
+          .catch((error) => {
+            dispatch(deleteExpenseFailure(error));
+          })
+      }
+    }
+     deleteExpense();
+    });
 };

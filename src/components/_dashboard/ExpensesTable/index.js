@@ -38,12 +38,12 @@ import USERLIST from "../../../_mocks_/user";
 //-------------------------------------------
 import { fDate } from "../../../utils/formatTime";
 // ----------------------------------------------------------------------
-import { useExpensesList } from "../../../functions/expense";
+import { useGetExpensesList, useDeleteExpense } from "../../../functions/expense";
 //---------------------------------------
 import {
   DispatchExpenseContext,
   ExpenseContext,
-  UserContext
+  UserContext,
 } from "../../../state/contexts/contexts";
 //---------------------------------------
 import { useGetCurrentUser } from "../../../auth/auth";
@@ -90,8 +90,7 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_user) =>
-        _user.category.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (x) => x.category.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
@@ -102,7 +101,7 @@ export default function ExpensesTable() {
   const [order, setOrder] = useState("asc");
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState("category");
-  const [filterName, setFilterName] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [expensesList, setExpensesList] = useState();
   const { expenses } = useContext(ExpenseContext);
@@ -114,13 +113,9 @@ export default function ExpensesTable() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  useExpensesList();
+  useGetExpensesList();
 
-if(expenses) {
-  return expenses.map((expense, i)=>(
-    console.log(expense.date)
-  ))
-}
+  //console.log(expenses)
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -132,11 +127,11 @@ if(expenses) {
     setOrderBy(property);
   };
 
-  //const expenseList= useExpensesList();
+  //const expenseList= useGetExpensesList();
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.category);
+      const newSelecteds = expenses.map((n) => n.category);
       setSelected(newSelecteds);
       return;
     }
@@ -171,19 +166,18 @@ if(expenses) {
   };
 
   const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+    setFilterCategory(event.target.value);
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - expenses.length) : 0;
 
-  const filteredUsers = applySortFilter(
-    USERLIST,
+  const filteredCategory = expenses ? applySortFilter(
+    expenses,
     getComparator(order, orderBy),
-    filterName
-  );
-
-  const isUserNotFound = filteredUsers.length === 0;
+    filterCategory
+  ) : null;
+  const isCategoryNotFound = expenses ? filteredCategory.length === 0 : null;
 
   return (
     <Page title="Expenses Table | Money-Management">
@@ -209,96 +203,108 @@ if(expenses) {
           <NewExpenseForm open={open} handleClose={handleClose} />
         </Stack>
 
-        <Card>
-          <UserListToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
+        {expenses ? (
+          <Card>
+            <UserListToolbar
+              numSelected={selected.length}
+              filterCategory={filterCategory}
+              onFilterName={handleFilterByName}
+            />
 
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: "800" }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const { id, expense, date, category, comment, num } = row;
-                      const isItemSelected = selected.indexOf(category) !== -1;
-
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          role="checkbox"
-                          selected={isItemSelected}
-                          aria-checked={isItemSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isItemSelected}
-                              onChange={(event) => handleClick(event, category)}
-                            />
-                          </TableCell>
-                          <TableCell>{num}</TableCell>
-                          <TableCell component="th" scope="row" padding="none">
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <Typography variant="subtitle2" noWrap>
-                                {fDate(date)}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="left">{category}</TableCell>
-                          <TableCell align="left">{expense}</TableCell>
-                          <TableCell align="right">
-                            <UserMoreMenu />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-                {isUserNotFound && (
+            <Scrollbar>
+              <TableContainer sx={{ minWidth: "800" }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={expenses.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
                   <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                    {filteredCategory
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row) => {
+                        const { docId, amount, date, category, comment } = row;
+                        const isItemSelected =
+                          selected.indexOf(category) !== -1;
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+                        return (
+                          <TableRow
+                            hover
+                            key={docId}
+                            tabIndex={-1}
+                            role="checkbox"
+                            selected={isItemSelected}
+                            aria-checked={isItemSelected}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={isItemSelected}
+                                onChange={(event) =>
+                                  handleClick(event, category)
+                                }
+                              />
+                            </TableCell>
+                            <TableCell>{date}</TableCell>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              padding="none"
+                            >
+                              <Stack
+                                direction="row"
+                                alignItems="center"
+                                spacing={2}
+                              >
+                                <Typography variant="subtitle2" noWrap>
+                                  {category}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell align="left">{amount}</TableCell>
+                            <TableCell align="left">{comment}</TableCell>
+                            <TableCell align="right">
+                              <UserMoreMenu docId={docId}/>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  {isCategoryNotFound && (
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          <SearchNotFound searchQuery={filterCategory} />
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  )}
+                </Table>
+              </TableContainer>
+            </Scrollbar>
+
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={expenses.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Card>
+        ) : null}
       </div>
     </Page>
   );
