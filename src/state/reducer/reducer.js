@@ -113,7 +113,6 @@ case "UPDATE_EXPENSE_FAILURE":
     return {
       ...state,
       expenses: payload,
-      loading: false,
     };
 
   case "GET_EXPENSE_FAILURE":

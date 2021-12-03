@@ -1,7 +1,7 @@
 import { filter } from "lodash";
 import { Icon } from "@iconify/react";
 import { sentenceCase } from "change-case";
-import { useState, useContext, useReducer } from "react";
+import { useState, useContext, useReducer, useEffect } from "react";
 import plusFill from "@iconify/icons-eva/plus-fill";
 import { Link as RouterLink } from "react-router-dom";
 import NewExpenseForm from "../NewExpenseForm";
@@ -38,10 +38,24 @@ import USERLIST from "../../../_mocks_/user";
 //-------------------------------------------
 import { fDate } from "../../../utils/formatTime";
 // ----------------------------------------------------------------------
-import {useExpensesList} from "../../../functions/expense";
+import { useExpensesList } from "../../../functions/expense";
 //---------------------------------------
+import {
+  DispatchExpenseContext,
+  ExpenseContext,
+} from "../../../state/contexts/contexts";
+//---------------------------------------
+import { useGetCurrentUser } from "../../../auth/auth";
+//-----------------------------------
+import firebase, { firestore } from "../../../firebase";
+//----------------------------------------
+import {
+  getExpenseRequest,
+  getExpenseFailure,
+  getExpenseSuccess,
+} from "../../../state/actions/expenseActionTypes";
+//---------------------------------
 
-//---------------------------------------
 const TABLE_HEAD = [
   { id: "date", label: "Date", alignRight: false },
   { id: "category", label: "Category", alignRight: false },
@@ -89,9 +103,35 @@ export default function ExpensesTable() {
   const [orderBy, setOrderBy] = useState("category");
   const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const[expensesList, setExpensesList] = useState();
+  const { expenses } = useContext(ExpenseContext);
+  const dispatch = useContext(DispatchExpenseContext);
+
+  //console.log(expenses);
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const userId = useGetCurrentUser();
+
+  useEffect(() => {
+    if (userId) {
+      return firestore
+        .collection("expenses")
+        .where("uid", "==", userId.id)
+        .orderBy("date", "desc")
+        .get()
+        .then((result) => {
+          const data = result.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          dispatch(getExpenseSuccess(data));
+        });
+    }
+  });
+
+  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -103,8 +143,7 @@ export default function ExpensesTable() {
     setOrderBy(property);
   };
 
-  const expenseList= useExpensesList();
-
+  //const expenseList= useExpensesList();
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -159,6 +198,9 @@ export default function ExpensesTable() {
 
   return (
     <Page title="Expenses Table | Money-Management">
+    {expensesList.map(({date, category})=>(
+      <span>{date}</span>
+    ))}
       <div>
         <Stack
           direction="row"
@@ -178,7 +220,7 @@ export default function ExpensesTable() {
           >
             New Expense
           </Button>
-          <NewExpenseForm open={open} handleClose={handleClose}/>
+          <NewExpenseForm open={open} handleClose={handleClose} />
         </Stack>
 
         <Card>

@@ -27,8 +27,9 @@ export const useExpensesList = () => {
         .collection("expenses")
         .where("uid", "==", userId.id)
         .orderBy("date", "desc")
-        .onSnapshot((querySnapshot) => {
-          const data = querySnapshot.docs.map((doc) => ({
+        .get()
+        .then((result) => {
+          const data = result.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));

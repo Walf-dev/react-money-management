@@ -129,7 +129,7 @@ export default function NewExpenseForm({ handleClose, open }) {
     } catch (error) {
       reject(
         setOpenSnackbar(true),
-        setSnackbarMessage("Expense not added to collection due to ", +error),
+        setSnackbarMessage("Expense not saved due to ", +error),
         setSeverity("error")
       );
     }
@@ -147,11 +147,10 @@ export default function NewExpenseForm({ handleClose, open }) {
           setSeverity("warning")
         );
       }
-      if (!loading) {
+      else if (!loading) {
         dispatch(addNewExpenseRequest());
         addExpenseToCollection(expenseObject)
           .then(() => {
-            dispatch(addExpenseSuccess());
             resolve(
               setOpenSnackbar(true),
               setSnackbarMessage("Expense added successfully"),
@@ -159,6 +158,7 @@ export default function NewExpenseForm({ handleClose, open }) {
             );
             document.getElementById("addexpenseform").reset();
             resetForm();
+            dispatch(addExpenseSuccess());
           })
           .catch((err) => {
             dispatch(addExpenseFailure(err));
