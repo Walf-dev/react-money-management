@@ -43,6 +43,7 @@ import { useExpensesList } from "../../../functions/expense";
 import {
   DispatchExpenseContext,
   ExpenseContext,
+  UserContext
 } from "../../../state/contexts/contexts";
 //---------------------------------------
 import { useGetCurrentUser } from "../../../auth/auth";
@@ -103,35 +104,23 @@ export default function ExpensesTable() {
   const [orderBy, setOrderBy] = useState("category");
   const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const[expensesList, setExpensesList] = useState();
+  const [expensesList, setExpensesList] = useState();
   const { expenses } = useContext(ExpenseContext);
-  const dispatch = useContext(DispatchExpenseContext);
+  const { user } = useContext(UserContext);
 
-  //console.log(expenses);
+  const dispatch = useContext(DispatchExpenseContext);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const userId = useGetCurrentUser();
 
-  useEffect(() => {
-    if (userId) {
-      return firestore
-        .collection("expenses")
-        .where("uid", "==", userId.id)
-        .orderBy("date", "desc")
-        .get()
-        .then((result) => {
-          const data = result.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          dispatch(getExpenseSuccess(data));
-        });
-    }
-  });
+  useExpensesList();
 
-  
+if(expenses) {
+  return expenses.map((expense, i)=>(
+    console.log(expense.date)
+  ))
+}
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -198,9 +187,6 @@ export default function ExpensesTable() {
 
   return (
     <Page title="Expenses Table | Money-Management">
-    {expensesList.map(({date, category})=>(
-      <span>{date}</span>
-    ))}
       <div>
         <Stack
           direction="row"

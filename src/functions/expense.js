@@ -13,27 +13,33 @@ import {
 import {
   DispatchExpenseContext,
   ExpenseContext,
+  UserContext
 } from "../state/contexts/contexts";
 //------------------------------------
 
 export const useExpensesList = () => {
   const dispatch = useContext(DispatchExpenseContext);
   const { expenses } = useContext(ExpenseContext);
-  //console.log(expenses)
-  const userId = useGetCurrentUser();
-  //listen to expenses collection changes
-    if (userId) {
-      return firestore
-        .collection("expenses")
-        .where("uid", "==", userId.id)
-        .orderBy("date", "desc")
-        .get()
-        .then((result) => {
-          const data = result.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          dispatch(getExpenseSuccess(data))
-        })
+  const { user } = useContext(UserContext);
+
+  console.log(expenses)
+  useEffect(() => {
+    function getExpenses() {
+      if (user && user.id && expenses==null) {
+        return firestore
+          .collection("expenses")
+          .where("uid", "==", user.id)
+          .orderBy("date", "desc")
+          .get()
+          .then((result) => {
+            const data = result.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            dispatch(getExpenseSuccess(data));
+          });
+      }
     }
+    getExpenses();
+  });
 };
