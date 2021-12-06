@@ -1,16 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Snackbar, Slide } from "@mui/material";
 import { UserContext } from "../../state/contexts/contexts";
+import { ExpenseContext } from "../../state/contexts/contexts";
 
 function Popup() {
   const [open, setOpen] = useState(false);
   const { error } = useContext(UserContext);
-
+  const {successMessage} = useContext(ExpenseContext);
   useEffect(() => {
-    if (error != null) {
+    if ((error != null) || (successMessage != null)) {
       setOpen(true);
     }
-  }, [error]);
+  }, [error, successMessage]);
 
   return (
     <Snackbar
@@ -19,7 +20,7 @@ function Popup() {
       open={open}
       onClose={() => setOpen(false)}
       autoHideDuration={5000}
-      message={error && error}
+      message={(error && error) || (successMessage && successMessage)}
     />
   );
 }

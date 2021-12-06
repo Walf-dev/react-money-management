@@ -28,6 +28,7 @@ export const useGetExpensesList = () => {
   useEffect(() => {
     function getExpenses() {
       if (user && user.id && expenses==null) {
+        dispatch(getExpenseRequest());
         return firestore
           .collection("expenses")
           .where("uid", "==", user.id)
@@ -42,30 +43,5 @@ export const useGetExpensesList = () => {
       }
     }
     getExpenses();
-  });
-};
-
-export const useDeleteExpense = () => {
-  const dispatch = useContext(DispatchExpenseContext);
-  const { expenses } = useContext(ExpenseContext);
-  const { user } = useContext(UserContext);
-
-    useEffect(() => {
-    function deleteExpense(docId) {
-      if (user && user.id && expenses != null) {
-        dispatch(deleteExpenseRequest());
-        return firestore
-          .collection("expenses")
-          .doc(docId)
-          .delete()
-          .then(() => {
-            dispatch(deleteExpenseSuccess());
-          })
-          .catch((error) => {
-            dispatch(deleteExpenseFailure(error));
-          })
-      }
-    }
-     deleteExpense();
-    });
+  },[expenses, dispatch, user]);
 };

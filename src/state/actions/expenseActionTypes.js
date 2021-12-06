@@ -80,3 +80,9 @@ export const deleteExpenseFailure = (err) => {
     payload: err && err.message ? err.message : err,
   };
 };
+
+export const closeSnackbar = () => {
+  return {
+    type: "CLOSE_SNACKBAR",
+  };
+};

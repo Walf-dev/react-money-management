@@ -61,7 +61,7 @@ const reducer = (state = INITIAL_STATE, { type, payload }) => {
         error: payload,
         loading: false,
       };
-//----------------------------------------------------------------
+    //----------------------------------------------------------------
     case "ADD_EXPENSE_REQUEST":
       return {
         ...state,
@@ -71,8 +71,10 @@ const reducer = (state = INITIAL_STATE, { type, payload }) => {
     case "ADD_EXPENSE_SUCCESS":
       return {
         ...state,
-        expense: payload,
         loading: false,
+        severity: "success",
+        successMessage: "Expense added successfully",
+        
       };
 
     case "ADD_EXPENSE_FAILURE":
@@ -80,68 +82,91 @@ const reducer = (state = INITIAL_STATE, { type, payload }) => {
         ...state,
         error: payload,
         loading: false,
+        severity: "warning",
+        
       };
-//-------------------------------
-case "UPDATE_EXPENSE_REQUEST":
-  return {
-    ...state,
-    loading: true,
-  };
+    //-------------------------------
+    case "UPDATE_EXPENSE_REQUEST":
+      return {
+        ...state,
+        loading: true,
+      };
 
-case "UPDATE_EXPENSE_SUCCESS":
-  return {
-    ...state,
-    expense: payload,
-    loading: false,
-  };
+    case "UPDATE_EXPENSE_SUCCESS":
+      return {
+        ...state,
+        expense: payload,
+        loading: false,
+        severity: "success",
+        successMessage: "Expense updated successfully",
+        
+      };
 
-case "UPDATE_EXPENSE_FAILURE":
-  return {
-    ...state,
-    error: payload,
-    loading: false,
-  };
+    case "UPDATE_EXPENSE_FAILURE":
+      return {
+        ...state,
+        error: payload,
+        loading: false,
+        severity: "warning",
+        
+      };
 
-  //------------------------------
-  case "GET_EXPENSE_REQUEST":
-    return {
-      ...state,
-      loading: true,
-    };
+    //------------------------------
+    case "GET_EXPENSE_REQUEST":
+      return {
+        ...state,
+        loading: true,
+      };
 
-  case "GET_EXPENSE_SUCCESS":
-    return {
-      ...state,
-      expenses: payload,
-    };
+    case "GET_EXPENSE_SUCCESS":
+      return {
+        ...state,
+        expenses: payload,
+        loading: false,
+      };
 
-  case "GET_EXPENSE_FAILURE":
-    return {
-      ...state,
-      error: payload,
-      loading: false,
-    };
-//------------------------------
-case "DELETE_EXPENSE_REQUEST":
-  return {
-    ...state,
-    loading: true,
-  };
+    case "GET_EXPENSE_FAILURE":
+      return {
+        ...state,
+        error: payload,
+        loading: false,
+        severity: "warning",
+        
+      };
+    //------------------------------
+    case "DELETE_EXPENSE_REQUEST":
+      return {
+        ...state,
+        loading: true,
+      };
 
-case "DELETE_EXPENSE_SUCCESS":
-  return {
-    ...state,
-    expenses: payload,
-    loading: false,
-  };
+    case "DELETE_EXPENSE_SUCCESS":
+      return {
+        ...state,
+        expenses: payload,
+        loading: false,
+        severity: "success",
+        successMessage: "Expense deleted successfully",
+        
+      };
 
-case "DELETE_EXPENSE_FAILURE":
-  return {
-    ...state,
-    error: payload,
-    loading: false,
-  };
-//----------------------------
+    case "DELETE_EXPENSE_FAILURE":
+      return {
+        ...state,
+        error: payload,
+        loading: false,
+        severity: "warning",
+        
+      };
+    //----------------------------
+    case "CLOSE_SNACKBAR":
+      return {
+        ...state,
+        severity: "success",
+        successMessage: null,
+        error: null,
+      };
+    //--------------------------------------
     default:
       return state;
   }

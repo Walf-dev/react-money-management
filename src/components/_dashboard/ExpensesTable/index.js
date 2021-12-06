@@ -34,14 +34,12 @@ import UserListHead from "./UserListHead";
 import UserListToolbar from "./UserListToolbar";
 import UserMoreMenu from "./UserMoreMenu";
 //--------------------------------
-import USERLIST from "../../../_mocks_/user";
 //-------------------------------------------
 import { fDate } from "../../../utils/formatTime";
 // ----------------------------------------------------------------------
-import { useGetExpensesList, useDeleteExpense } from "../../../functions/expense";
+import { useGetExpensesList, deleteExpense } from "../../../functions/expense";
 //---------------------------------------
 import {
-  DispatchExpenseContext,
   ExpenseContext,
   UserContext,
 } from "../../../state/contexts/contexts";
@@ -104,10 +102,8 @@ export default function ExpensesTable() {
   const [filterCategory, setFilterCategory] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [expensesList, setExpensesList] = useState();
-  const { expenses } = useContext(ExpenseContext);
+  const { expenses, loading } = useContext(ExpenseContext);
   const { user } = useContext(UserContext);
-
-  const dispatch = useContext(DispatchExpenseContext);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -115,6 +111,9 @@ export default function ExpensesTable() {
 
   useGetExpensesList();
 
+  useEffect(() => {
+    setExpensesList(expenses)
+  },[expenses])
   //console.log(expenses)
 
   const handleClickOpen = () => {
@@ -131,7 +130,7 @@ export default function ExpensesTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = expenses.map((n) => n.category);
+      const newSelecteds = expensesList.map((n) => n.category);
       setSelected(newSelecteds);
       return;
     }
@@ -170,14 +169,14 @@ export default function ExpensesTable() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - expenses.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - expensesList.length) : 0;
 
-  const filteredCategory = expenses ? applySortFilter(
-    expenses,
+  const filteredCategory = expensesList ? applySortFilter(
+    expensesList,
     getComparator(order, orderBy),
     filterCategory
   ) : null;
-  const isCategoryNotFound = expenses ? filteredCategory.length === 0 : null;
+  const isCategoryNotFound = expensesList ? filteredCategory.length === 0 : null;
 
   return (
     <Page title="Expenses Table | Money-Management">
@@ -203,7 +202,7 @@ export default function ExpensesTable() {
           <NewExpenseForm open={open} handleClose={handleClose} />
         </Stack>
 
-        {expenses ? (
+        {expensesList && !loading ? (
           <Card>
             <UserListToolbar
               numSelected={selected.length}
@@ -218,7 +217,7 @@ export default function ExpensesTable() {
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
-                    rowCount={expenses.length}
+                    rowCount={expensesList.length}
                     numSelected={selected.length}
                     onRequestSort={handleRequestSort}
                     onSelectAllClick={handleSelectAllClick}
@@ -297,14 +296,14 @@ export default function ExpensesTable() {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={expenses.length}
+              count={expensesList.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Card>
-        ) : null}
+        ) : <span>Loading table...</span>}
       </div>
     </Page>
   );

@@ -4,4 +4,6 @@ export const INITIAL_STATE = {
   user: null,
   authenticated: false,
   expenses: null,
+  severity: "success",
+  successMessage: null,
 };

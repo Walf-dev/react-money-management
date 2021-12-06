@@ -25,7 +25,7 @@ import ExpensePopup from "./components/Popup/ExpensePopup";
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  //console.log(state)
+  console.log(state);
   const user = useGetCurrentUser();
   useEffect(() => {
     dispatch({ type: "GET_CURRENT_USER", payload: user });
@@ -37,8 +37,8 @@ export default function App() {
         <DispatchUserContext.Provider value={dispatch}>
           <ExpenseContext.Provider value={state}>
             <DispatchExpenseContext.Provider value={dispatch}>
-              <Popup />
-              <ExpensePopup/>
+              {/*<Popup />*/}
+              <ExpensePopup />
               <ThemeConfig>
                 <ScrollToTop />
                 <GlobalStyles />

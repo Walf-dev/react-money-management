@@ -111,9 +111,6 @@ export default function NewExpenseForm({ handleClose, open }) {
   const [date, setdate] = React.useState(fDate(new Date()));
   const [amount, setAmount] = React.useState("");
   const [comment, setComment] = React.useState("");
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState("");
-  const [severity, setSeverity] = React.useState("success");
   const dispatch = useContext(DispatchExpenseContext);
   const { loading } = useContext(ExpenseContext);
 
@@ -131,9 +128,7 @@ export default function NewExpenseForm({ handleClose, open }) {
       await expenses.add(expense);
     } catch (error) {
       reject(
-        setOpenSnackbar(true),
-        setSnackbarMessage("Expense not saved due to ", +error),
-        setSeverity("error")
+        dispatch(addExpenseFailure(error)),
       );
     }
   }
@@ -145,33 +140,21 @@ export default function NewExpenseForm({ handleClose, open }) {
     return new Promise((resolve, reject) => {
       if (!date || !amount || !comment || !category) {
         return reject(
-          setOpenSnackbar(true),
-          setSnackbarMessage("Fill in all the fields"),
-          setSeverity("warning")
+          dispatch(addExpenseFailure("Fill in all the fields")),
         );
       }
       else if (!loading) {
         dispatch(addNewExpenseRequest());
         addExpenseToCollection(expenseObject)
           .then(() => {
-            resolve(
-              setOpenSnackbar(true),
-              setSnackbarMessage("Expense added successfully"),
-              setSeverity("success")
-            );
             document.getElementById("addexpenseform").reset();
             resetForm();
-            dispatch(addExpenseSuccess());
+            resolve(
+              dispatch(addExpenseSuccess()),
+            );
           })
           .catch((err) => {
             dispatch(addExpenseFailure(err));
-            reject(
-              setOpenSnackbar(true),
-              setSnackbarMessage(
-                "Adding expense failed due to: " + err.message
-              ),
-              setSeverity("error")
-            );
           });
       }
     });
@@ -277,18 +260,11 @@ export default function NewExpenseForm({ handleClose, open }) {
             />
             <DialogActions sx={{ mt: 2 }}>
               <Button onClick={handleClose}>Cancel</Button>
-              <LoadingButton type="submit" variant="contained">
+              <LoadingButton disabled={loading} type="submit" variant="contained">
                 {loading ? `Submitting...` : `Submit`}
               </LoadingButton>
             </DialogActions>
           </form>
-          <ExpensePopup
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-            message={snackbarMessage}
-            setSnackbarMessage={setSnackbarMessage}
-            severity={severity}
-          />
         </DialogContent>
       </Dialog>
     </>

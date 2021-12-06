@@ -1,11 +1,19 @@
-import { Icon } from '@iconify/react';
-import { useRef, useState } from 'react';
-import editFill from '@iconify/icons-eva/edit-fill';
-import { Link as RouterLink } from 'react-router-dom';
-import trash2Outline from '@iconify/icons-eva/trash-2-outline';
-import moreVerticalFill from '@iconify/icons-eva/more-vertical-fill';
+import { Icon } from "@iconify/react";
+import { useRef, useState, useContext } from "react";
+import editFill from "@iconify/icons-eva/edit-fill";
+import { Link as RouterLink } from "react-router-dom";
+import trash2Outline from "@iconify/icons-eva/trash-2-outline";
+import moreVerticalFill from "@iconify/icons-eva/more-vertical-fill";
 // material
-import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, TextField, Button } from '@mui/material';
+import {
+  Menu,
+  MenuItem,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+  Button,
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import Dialog from "@mui/material/Dialog";
@@ -19,9 +27,9 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 //------------------------
 import {
-  addNewExpenseRequest,
-  addExpenseFailure,
-  addExpenseSuccess,
+  deleteExpenseFailure,
+  deleteExpenseRequest,
+  deleteExpenseSuccess,
 } from "../../../state/actions/expenseActionTypes";
 //-------------------------------
 import {
@@ -29,8 +37,9 @@ import {
   ExpenseContext,
 } from "../../../state/contexts/contexts";
 // ----------------------------------------------------------------------
-import { useGetExpensesList,  } from "../../../functions/expense";
+import { useGetExpensesList } from "../../../functions/expense";
 //---------------------------------------
+import firebase, { firestore } from "../../../firebase";
 
 const currencies = [
   {
@@ -51,13 +60,13 @@ const currencies = [
   },
 ];
 
-export default function UserMoreMenu({docId}) {
+export default function UserMoreMenu({ docId }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-
   //---------------------
   const [currency, setCurrency] = useState("EUR");
   const [value, setValue] = useState(new Date());
+  const dispatch = useContext(DispatchExpenseContext);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -75,6 +84,25 @@ export default function UserMoreMenu({docId}) {
     setCurrency(event.target.value);
   };
 
+  async function deleteExpense() {
+    try {
+      dispatch(deleteExpenseRequest());
+      return firestore
+        .collection("expenses")
+        .doc(docId)
+        .delete()
+        .then(() => {
+          dispatch(deleteExpenseSuccess("Expense deleted successfully"));
+        })
+        .catch((error) => {
+          dispatch(deleteExpenseFailure(error));
+        });
+    } catch (error) {
+      console.log("Expense not deleted due to: " + error);
+      dispatch(deleteExpenseFailure("Expense not deleted due to: " + error));
+    }
+    setIsOpen(false);
+  }
 
   return (
     <>
@@ -87,23 +115,37 @@ export default function UserMoreMenu({docId}) {
         anchorEl={ref.current}
         onClose={() => setIsOpen(false)}
         PaperProps={{
-          sx: { width: 200, maxWidth: '100%' }
+          sx: { width: 200, maxWidth: "100%" },
         }}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem sx={{ color: 'text.secondary' }}>
+        <MenuItem
+          sx={{ color: "text.secondary" }}
+          onClick={() => deleteExpense()}
+        >
           <ListItemIcon>
-            <Icon icon={trash2Outline} width={24} height={24}/>
+            <Icon icon={trash2Outline} width={24} height={24} />
           </ListItemIcon>
-          <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
+          <ListItemText
+            primary="Delete"
+            primaryTypographyProps={{ variant: "body2" }}
+          />
         </MenuItem>
 
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+        <MenuItem
+          component={RouterLink}
+          to="#"
+          sx={{ color: "text.secondary" }}
+        >
           <ListItemIcon>
             <Icon icon={editFill} width={24} height={24} />
           </ListItemIcon>
-          <ListItemText primary="Edit" onClick={handleClickOpen} primaryTypographyProps={{ variant: 'body2' }} />
+          <ListItemText
+            primary="Edit"
+            onClick={handleClickOpen}
+            primaryTypographyProps={{ variant: "body2" }}
+          />
         </MenuItem>
       </Menu>
 
@@ -111,7 +153,8 @@ export default function UserMoreMenu({docId}) {
         <DialogTitle> Modify Expense</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ mb: 3 }}>
-            Fill-in the form below to modify expense. Expense should be greater than 0.
+            Fill-in the form below to modify expense. Expense should be greater
+            than 0.
           </DialogContentText>
           <form>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -175,7 +218,6 @@ export default function UserMoreMenu({docId}) {
           </form>
         </DialogContent>
       </Dialog>
-
     </>
   );
 }
