@@ -37,7 +37,7 @@ import {
   ExpenseContext,
 } from "../../../state/contexts/contexts";
 // ----------------------------------------------------------------------
-import { useGetExpensesList } from "../../../functions/expense";
+import { useGetExpensesList } from "../../../hooks/expense";
 //---------------------------------------
 import firebase, { firestore } from "../../../firebase";
 
@@ -92,7 +92,7 @@ export default function UserMoreMenu({ docId }) {
         .doc(docId)
         .delete()
         .then(() => {
-          dispatch(deleteExpenseSuccess("Expense deleted successfully"));
+          dispatch(deleteExpenseSuccess());
         })
         .catch((error) => {
           dispatch(deleteExpenseFailure(error));

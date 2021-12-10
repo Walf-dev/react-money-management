@@ -37,7 +37,7 @@ import UserMoreMenu from "./UserMoreMenu";
 //-------------------------------------------
 import { fDate } from "../../../utils/formatTime";
 // ----------------------------------------------------------------------
-import { useGetExpensesList, deleteExpense } from "../../../functions/expense";
+import { useGetExpensesList, deleteExpense } from "../../../hooks/expense";
 //---------------------------------------
 import {
   ExpenseContext,
@@ -78,21 +78,6 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(
-      array,
-      (x) => x.category.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    );
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
 
 export default function ExpensesTable() {
   const [page, setPage] = useState(0);
@@ -109,6 +94,22 @@ export default function ExpensesTable() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  function applySortFilter(array, comparator, query) {
+    const stabilizedThis = expensesList ? array.map((el, index) => [el, index]) : null;
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    if (query) {
+      return filter(
+        array,
+        (x) => x.category.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      );
+    }
+    return stabilizedThis.map((el) => el[0]);
+  }
+  
   useGetExpensesList();
 
   useEffect(() => {
