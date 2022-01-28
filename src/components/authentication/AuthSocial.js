@@ -31,7 +31,7 @@ export default function AuthSocial() {
     loginWithProvider(providerId)
       .then((user) => {
         dispatch(userLoginSuccess(user));
-        history.replace("/dashboard/app");
+        history.replace("/");
       })
       .catch((err) => dispatch(userLoginFailure(err)));
   };

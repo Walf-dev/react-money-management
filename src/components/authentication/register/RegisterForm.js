@@ -84,7 +84,7 @@ export default function RegisterForm() {
         .then((user) => {
           addUserToCollection(firestoreUserDetails)
           dispatch(userLoginSuccess(user));
-          history.push("/dashboard/app");
+          history.push("/");
         })
         .catch((err) => dispatch(userLoginFailure(err)));
     }

@@ -36,13 +36,13 @@ import firebase, { auth } from "../../../firebase";
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("test@test.com");
   const [keepUserLoggedIn, setKeepUserLoggedIn] = useState(true);
   const dispatch = useContext(DispatchUserContext);
   const { loading } = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = React.useState({
-    value: "",
+    value: "123456",
     showPassword: false,
   });
   const history = useHistory();
@@ -70,7 +70,7 @@ export default function LoginForm() {
       signInWithEmailAndPassword(email, password.value)
         .then((user) => {
           dispatch(userLoginSuccess(user));
-          history.push("/dashboard/app");
+          history.push("/");
         })
         .catch((err) => dispatch(userLoginFailure(err)));
     }
@@ -103,7 +103,7 @@ export default function LoginForm() {
         signInWithEmailAndPassword(email, password.value)
           .then((user) => {
             dispatch(userLoginSuccess(user));
-            history("/dashboard/app", { replace: true });
+            history("/", { replace: true });
           })
           .catch((err) => dispatch(userLoginFailure(err)));
       }

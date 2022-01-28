@@ -25,8 +25,7 @@ export default function AppRoutes() {
   return (
     <Router basename="/">
       <Switch>
-        <Route exact path="/" component={Login}/>
-        <PrivateRoute exact path="/dashboard/app" component={DashboardApp}/>
+        <PrivateRoute exact path="/" component={DashboardApp}/>
         <PrivateRoute exact path="/dashboard/user" component={User}/>
         {/*<PrivateRoute exact path="/dashboard/products" component={Products}/>*/}
         <PrivateRoute exact path="/dashboard/blog" component={Blog}/>
